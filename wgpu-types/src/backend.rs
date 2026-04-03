@@ -49,6 +49,8 @@ pub enum Backend {
     Gl = 4,
     /// WebGPU in the browser
     BrowserWebGpu = 5,
+    /// PS3 RSX / GCM (via PSL1GHT)
+    Gcm = 6,
 }
 
 impl Backend {
@@ -60,6 +62,7 @@ impl Backend {
         Self::Dx12,
         Self::Gl,
         Self::BrowserWebGpu,
+        Self::Gcm,
     ];
 
     /// Returns the string name of the backend.
@@ -72,6 +75,7 @@ impl Backend {
             Backend::Dx12 => "dx12",
             Backend::Gl => "gl",
             Backend::BrowserWebGpu => "webgpu",
+            Backend::Gcm => "gcm",
         }
     }
 }
@@ -117,6 +121,10 @@ bitflags::bitflags! {
         /// Whether WebGPU is targeted is decided upon the creation of the `wgpu::Instance`,
         /// *not* upon adapter creation. See `wgpu::Instance::new`.
         const BROWSER_WEBGPU = 1 << Backend::BrowserWebGpu as u32;
+
+        /// [`Backend::Gcm`].
+        /// PS3 RSX / GCM backend via PSL1GHT.
+        const GCM = 1 << Backend::Gcm as u32;
 
         /// All the apis that wgpu offers first tier of support for.
         ///
@@ -189,6 +197,7 @@ impl Backends {
                 "opengl" | "gles" | "gl" => Self::GL,
                 "webgpu" => Self::BROWSER_WEBGPU,
                 "noop" => Self::NOOP,
+                "gcm" | "ps3" => Self::GCM,
                 b => {
                     log::warn!("unknown backend string '{b}'");
                     continue;
